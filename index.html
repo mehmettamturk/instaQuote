@@ -8,15 +8,7 @@
     <link rel="stylesheet" href="css/style.css"/>
 
     <script>
-        var background = new Image();
-        background.src = "bg.png";
-
-        var bgMask = new Image();
-        bgMask.src = "bgMask.png";
-
-        var logo = new Image();
-        logo.src = "logo.png";
-
+        var background, bgMask, logo;
         var canvas, context, x,y;
 
         window.onload = function() {
@@ -123,30 +115,48 @@
         };
 
         var createImage = function() {
-            canvas = document.getElementById("myCanvas");
-            context = canvas.getContext("2d");
+            background = new Image();
+            background.src = "bg.png";
+            background.onload = function() { areImagesReady(); };
 
-            canvas.width = 960;
-            canvas.height = 960;
+            bgMask = new Image();
+            bgMask.src = "bgMask.png";
+            bgMask.onload = function() { areImagesReady(); };
 
-            x = canvas.width / 2;
-            y = canvas.height / 2;
-            
-            var text = document.getElementById("mainText").value;
-            var from = document.getElementById("quoteName").value;
-            var date = document.getElementById("quoteDate").value;
-            var leftTag = document.getElementById("leftTag").value;
-            var leftText = document.getElementById("leftText").value;
-            var rightTag = document.getElementById("rightTag").value;
-            var rightText = document.getElementById("rightText").value;
+            logo = new Image();
+            logo.src = "logo.png";
+            logo.onload = function() { areImagesReady(); };
+        };
 
-            drawImages(canvas, context);
-            drawMainText(context, x, y, text);
-            drawBlueLine(context, x, y);
+        var imageCount = 0;
+        var areImagesReady = function() {
+            imageCount++;
+            if (imageCount == 3) {
+                canvas = document.getElementById("myCanvas");
+                context = canvas.getContext("2d");
 
-            drawMovieName(context, x, y, from, date);
-            drawLeftText(context, x, y, leftTag, leftText);
-            drawRightText(context, x, y, rightTag, rightText);
+                canvas.width = 960;
+                canvas.height = 960;
+
+                x = canvas.width / 2;
+                y = canvas.height / 2;
+
+                var text = document.getElementById("mainText").value;
+                var from = document.getElementById("quoteName").value;
+                var date = document.getElementById("quoteDate").value;
+                var leftTag = document.getElementById("leftTag").value;
+                var leftText = document.getElementById("leftText").value;
+                var rightTag = document.getElementById("rightTag").value;
+                var rightText = document.getElementById("rightText").value;
+
+                drawImages(canvas, context);
+                drawMainText(context, x, y, text);
+                drawBlueLine(context, x, y);
+
+                drawMovieName(context, x, y, from, date);
+                drawLeftText(context, x, y, leftTag, leftText);
+                drawRightText(context, x, y, rightTag, rightText);
+            }
         };
 
         var saveImage = function() {
