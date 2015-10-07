@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css"/>
 
     <script>
-        var background, bgMask, logo;
+        var background, bgMask, logo, loadedBg, loadedLogo;
         var canvas, context, x,y;
 
         window.onload = function() {
@@ -20,6 +20,62 @@
 
             x = canvas.width / 2;
             y = canvas.height / 2;
+
+            document.getElementById('bgImage').addEventListener('change', function readFile (evt) {
+                loadedBg = evt.target.files[0];
+            }, false);
+
+            document.getElementById('logo').addEventListener('change', function readFile (evt) {
+                loadedLogo = evt.target.files[0];
+            }, false);
+        };
+
+        var drawImageProp = function(ctx, img, x, y, w, h, offsetX, offsetY) {
+
+            if (arguments.length === 2) {
+                x = y = 0;
+                w = ctx.canvas.width;
+                h = ctx.canvas.height;
+            }
+
+            /// default offset is center
+            offsetX = offsetX ? offsetX : 0.5;
+            offsetY = offsetY ? offsetY : 0.5;
+
+            /// keep bounds [0.0, 1.0]
+            if (offsetX < 0) offsetX = 0;
+            if (offsetY < 0) offsetY = 0;
+            if (offsetX > 1) offsetX = 1;
+            if (offsetY > 1) offsetY = 1;
+
+            var iw = img.width,
+                ih = img.height,
+                r = Math.min(w / iw, h / ih),
+                nw = iw * r,   /// new prop. width
+                nh = ih * r,   /// new prop. height
+                cx, cy, cw, ch, ar = 1;
+
+            /// decide which gap to fill
+            if (nw < w) ar = w / nw;
+            if (nh < h) ar = h / nh;
+            nw *= ar;
+            nh *= ar;
+
+            /// calc source rectangle
+            cw = iw / (nw / w);
+            ch = ih / (nh / h);
+
+            cx = (iw - cw) * offsetX;
+            cy = (ih - ch) * offsetY;
+
+            /// make sure source rectangle is valid
+            if (cx < 0) cx = 0;
+            if (cy < 0) cy = 0;
+            if (cw > iw) cw = iw;
+            if (ch > ih) ch = ih;
+
+            /// fill image in dest. rectangle
+            ctx.drawImage(img, cx, cy, cw, ch,  x, y, w, h);
         };
 
         var fillTextMultiLine = function(context, text, x, y) {
@@ -58,9 +114,33 @@
         };
 
         var drawImages = function(canvas, context) {
-            context.drawImage(background, 0, 0);
+            drawImageProp(context, background, 0, 0, canvas.width, canvas.height);
             context.drawImage(bgMask, 0, 0);
-            context.drawImage(logo, canvas.width - logo.width - 40, 40);
+
+            var sizes = getLogoSizes(logo);
+            context.drawImage(logo, canvas.width - logo.width - 40, 40, sizes[0], sizes[1]);
+        };
+
+        var getLogoSizes = function(logo) {
+            var maxWidth = 70;
+            var maxHeight = 70;
+            var ratio = 0;
+            var width = logo.width;
+            var height = logo.height;
+
+            ratio = maxWidth / width;
+            logo.width = maxWidth;
+            logo.height = height * ratio;
+            height = height * ratio;
+            width = width * ratio;
+
+            ratio = maxHeight / height;
+            logo.height = maxHeight;
+            logo.width = width * ratio;
+            width = width * ratio;
+            height = height * ratio;
+
+            return [width, height];
         };
 
         var drawBlueLine = function(context, x, y) {
@@ -86,7 +166,7 @@
             context.font = "300 40px 'GuardianSans'";
             context.fillText(from, x, y + (lineHeight * 2) - 50);
             context.font = "400 30px 'GuardianSans'";
-            context.fillText("( " + date + " )", x, y + (lineHeight * 2) - 10);
+            context.fillText(date, x, y + (lineHeight * 2) - 10);
         };
 
         var drawLeftText = function(context, x, y, tag, text) {
@@ -117,8 +197,9 @@
         var imageCount = 0;
         var createImage = function() {
             imageCount = 0;
+
             background = new Image();
-            background.src = "bg.png";
+            background.src = loadedBg ? URL.createObjectURL(loadedBg) : "bg.png";
             background.onload = function() { areImagesReady(); };
 
             bgMask = new Image();
@@ -126,7 +207,7 @@
             bgMask.onload = function() { areImagesReady(); };
 
             logo = new Image();
-            logo.src = "logo.png";
+            logo.src = loadedLogo ? URL.createObjectURL(loadedLogo) : "logo.png";
             logo.onload = function() { areImagesReady(); };
         };
 
@@ -182,6 +263,14 @@
 <div id="form">
     <div class="formPart left">
         <div class="formItem">
+            <label> Arkaplan: </label>
+            <input type="file" name="file" id="bgImage" accept="image/*" enctype="multipart/form-data">
+        </div>
+        <div class="formItem">
+            <label> Logo: </label>
+            <input type="file" name="file" id="logo" accept="image/*" enctype="multipart/form-data">
+        </div>
+        <div class="formItem">
             <label class="textArea"> Söz: </label>
             <textarea id="mainText">Bana hayatımın çok garip bir döneminde rastladın.</textarea>
         </div>
@@ -191,7 +280,7 @@
         </div>
         <div class="formItem">
             <label> Tarih: </label>
-            <input id="quoteDate" type="text" value="1999"/>
+            <input id="quoteDate" type="text" value="(1999)"/>
         </div>
     </div>
     <div class="formPart right">
@@ -199,12 +288,10 @@
             <p class="header"> Sol Alt Köşe </p>
             <div class="formItem">
                 <label> Etiket: </label>
-                <!--<input id="leftTag" type="text" value="Fotoğraf"/>-->
                 <input id="leftTag" type="text" value="http://"/>
             </div>
             <div class="formItem">
                 <label> Değer: </label>
-                <!--<input id="leftText" type="text" value="Keith Mulcahy"/>-->
                 <input id="leftText" type="text" value="line.do"/>
             </div>
         </div>

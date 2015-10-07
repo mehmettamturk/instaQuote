@@ -14,6 +14,7 @@ body {
 canvas {
     width: 960px;
     height: 960px;
+    border: 3px solid black;
 }
 
 #form {
@@ -42,7 +43,7 @@ label.textArea {
     top: -90px;
 }
 
-input, textarea {
+input[type=text], textarea {
     position: relative;
     outline: none;
     width: 300px;
@@ -60,6 +61,11 @@ input, textarea {
 textarea {
     width: 300px;
     height: 100px;
+}
+
+input[type=file] {
+    width: 300px;
+    height: 40px
 }
 
 button {
