@@ -114,7 +114,9 @@
             context.fillText(tag, (x * 2) - 33 - textWidth, (y * 2) - 30);
         };
 
+        var imageCount = 0;
         var createImage = function() {
+            imageCount = 0;
             background = new Image();
             background.src = "bg.png";
             background.onload = function() { areImagesReady(); };
@@ -128,7 +130,6 @@
             logo.onload = function() { areImagesReady(); };
         };
 
-        var imageCount = 0;
         var areImagesReady = function() {
             imageCount++;
             if (imageCount == 3) {
