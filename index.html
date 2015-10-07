@@ -28,132 +28,141 @@
 
             x = canvas.width / 2;
             y = canvas.height / 2;
+        };
 
-            var fillTextMultiLine = function(context, text, x, y) {
-                if (text.length > 28) {
-                    text = text.split(' ');
-                    var count = 0;
-                    var breakTimes = [];
-                    for (var i = 0; i < text.length; i++) {
-                        count += text[i].length;
+        var fillTextMultiLine = function(context, text, x, y) {
+            if (text.length > 28) {
+                text = text.split(' ');
+                var count = 0;
+                var breakTimes = [];
+                for (var i = 0; i < text.length; i++) {
+                    count += text[i].length;
 
-                        if (count > 24) {
-                            breakTimes.push(i);
-                            count = 0;
-                        }
+                    if (count > 24) {
+                        breakTimes.push(i);
+                        count = 0;
                     }
-
-                    if (breakTimes.length) {
-                        breakTimes.forEach(function(i) {
-                            text.splice(i, 0, "\n");
-                        })
-                    }
-
-                    text = text.join(' ');
                 }
 
-                var lineHeight = context.measureText("M").width * 1.2;
-                var lines = text.split("\n");
-
-                if (lines.length > 2)
-                    y -= lineHeight * (lines.length - 2);
-
-                for (var i = 0; i < lines.length; ++i) {
-                    context.fillText(lines[i], x, y);
-                    y += lineHeight;
+                if (breakTimes.length) {
+                    breakTimes.forEach(function(i) {
+                        text.splice(i, 0, "\n");
+                    })
                 }
-            };
 
-            var drawImages = function(canvas, context) {
-                context.drawImage(background, 0, 0);
-                context.drawImage(bgMask, 0, 0);
-                context.drawImage(logo, canvas.width - logo.width - 40, 40);
-            };
+                text = text.join(' ');
+            }
 
-            var drawBlueLine = function(context, x, y) {
-                var lineHeight = (context.measureText("M").width * 1.2) * 2;
-                context.beginPath();
-                context.moveTo(x - 64, y + lineHeight);
-                context.lineTo(x + 64, y + lineHeight);
-                context.lineWidth = 4;
+            var lineHeight = context.measureText("M").width * 1.2;
+            var lines = text.split("\n");
 
-                context.strokeStyle = '#7BCEED';
-                context.stroke();
-            };
+            if (lines.length > 2)
+                y -= lineHeight * (lines.length - 2);
 
-            var drawMainText = function(context, x, y, text) {
-                context.font = "58px 'Merriweather'";
-                context.textAlign = 'center';
-                context.fillStyle = 'white';
-                fillTextMultiLine(context, "“" + text + "”", x, y);
-            };
+            for (var i = 0; i < lines.length; ++i) {
+                context.fillText(lines[i], x, y);
+                y += lineHeight;
+            }
+        };
 
-            var drawMovieName = function(context, x, y, from, date) {
-                var lineHeight = (context.measureText("M").width * 1.2) * 2;
-                context.font = "300 40px 'GuardianSans'";
-                context.fillText(from, x, y + (lineHeight * 2) - 50);
-                context.font = "400 30px 'GuardianSans'";
-                context.fillText("( " + date + " )", x, y + (lineHeight * 2) - 10);
-            };
+        var drawImages = function(canvas, context) {
+            context.drawImage(background, 0, 0);
+            context.drawImage(bgMask, 0, 0);
+            context.drawImage(logo, canvas.width - logo.width - 40, 40);
+        };
 
-            var drawLeftText = function(context, x, y, tag, text) {
-                context.textAlign = 'left';
+        var drawBlueLine = function(context, x, y) {
+            var lineHeight = (context.measureText("M").width * 1.2) * 2;
+            context.beginPath();
+            context.moveTo(x - 64, y + lineHeight);
+            context.lineTo(x + 64, y + lineHeight);
+            context.lineWidth = 4;
 
-                context.font = "300 20px 'Merriweather'";
-                context.fillStyle = "rgba(255, 255, 255, .5)";
-                context.fillText(tag, 30, (y * 2) - 30);
-                var tagWidth = (context.measureText(tag).width);
+            context.strokeStyle = '#7BCEED';
+            context.stroke();
+        };
 
-                context.font = "600 20px 'Merriweather'";
-                context.fillStyle = "white";
-                context.fillText(text, 35 + tagWidth, (y * 2) - 30);
-            };
+        var drawMainText = function(context, x, y, text) {
+            context.font = "58px 'Merriweather'";
+            context.textAlign = 'center';
+            context.fillStyle = 'white';
+            fillTextMultiLine(context, "“" + text + "”", x, y);
+        };
 
-            var drawRightText = function(context, x, y, tag, text) {
-                context.textAlign = 'right';
+        var drawMovieName = function(context, x, y, from, date) {
+            var lineHeight = (context.measureText("M").width * 1.2) * 2;
+            context.font = "300 40px 'GuardianSans'";
+            context.fillText(from, x, y + (lineHeight * 2) - 50);
+            context.font = "400 30px 'GuardianSans'";
+            context.fillText("( " + date + " )", x, y + (lineHeight * 2) - 10);
+        };
 
-                var textWidth = (context.measureText(text).width);
-                context.font = "600 20px 'Merriweather'";
-                context.fillText(text, (x * 2) - 30, (y * 2) - 30);
+        var drawLeftText = function(context, x, y, tag, text) {
+            context.textAlign = 'left';
 
-                context.font = "300 20px 'Merriweather'";
-                context.fillStyle = "rgba(255, 255, 255, .5)";
-                context.fillText(tag, (x * 2) - 33 - textWidth, (y * 2) - 30);
-            };
+            context.font = "300 20px 'Merriweather'";
+            context.fillStyle = "rgba(255, 255, 255, .5)";
+            context.fillText(tag, 30, (y * 2) - 30);
+            var tagWidth = (context.measureText(tag).width);
 
-            var createImage = function() {
-                var text = document.getElementById("mainText").value;
-                var from = document.getElementById("quoteName").value;
-                var date = document.getElementById("quoteDate").value;
-                var leftTag = document.getElementById("leftTag").value;
-                var leftText = document.getElementById("leftText").value;
-                var rightTag = document.getElementById("rightTag").value;
-                var rightText = document.getElementById("rightText").value;
+            context.font = "600 20px 'Merriweather'";
+            context.fillStyle = "white";
+            context.fillText(text, 35 + tagWidth, (y * 2) - 30);
+        };
 
-                drawImages(canvas, context);
-                drawMainText(context, x, y, text);
-                drawBlueLine(context, x, y);
+        var drawRightText = function(context, x, y, tag, text) {
+            context.textAlign = 'right';
 
-                drawMovieName(context, x, y, from, date);
-                drawLeftText(context, x, y, leftTag, leftText);
-                drawRightText(context, x, y, rightTag, rightText);
-            };
+            var textWidth = (context.measureText(text).width);
+            context.font = "600 20px 'Merriweather'";
+            context.fillText(text, (x * 2) - 30, (y * 2) - 30);
 
-            var saveImage = function() {
-                var canvasElement = document.getElementById("myCanvas");
-                var MIME_TYPE = "image/png";
+            context.font = "300 20px 'Merriweather'";
+            context.fillStyle = "rgba(255, 255, 255, .5)";
+            context.fillText(tag, (x * 2) - 33 - textWidth, (y * 2) - 30);
+        };
 
-                var imgURL = canvasElement.toDataURL(MIME_TYPE);
+        var createImage = function() {
+            canvas = document.getElementById("myCanvas");
+            context = canvas.getContext("2d");
 
-                var dlLink = document.createElement('a');
-                dlLink.download = 'gunluksut_' + new Date().getTime();
-                dlLink.href = imgURL;
-                dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+            canvas.width = 960;
+            canvas.height = 960;
 
-                document.body.appendChild(dlLink);
-                dlLink.click();
-                document.body.removeChild(dlLink);
-            };
+            x = canvas.width / 2;
+            y = canvas.height / 2;
+            
+            var text = document.getElementById("mainText").value;
+            var from = document.getElementById("quoteName").value;
+            var date = document.getElementById("quoteDate").value;
+            var leftTag = document.getElementById("leftTag").value;
+            var leftText = document.getElementById("leftText").value;
+            var rightTag = document.getElementById("rightTag").value;
+            var rightText = document.getElementById("rightText").value;
+
+            drawImages(canvas, context);
+            drawMainText(context, x, y, text);
+            drawBlueLine(context, x, y);
+
+            drawMovieName(context, x, y, from, date);
+            drawLeftText(context, x, y, leftTag, leftText);
+            drawRightText(context, x, y, rightTag, rightText);
+        };
+
+        var saveImage = function() {
+            var canvasElement = document.getElementById("myCanvas");
+            var MIME_TYPE = "image/png";
+
+            var imgURL = canvasElement.toDataURL(MIME_TYPE);
+
+            var dlLink = document.createElement('a');
+            dlLink.download = 'gunluksut_' + new Date().getTime();
+            dlLink.href = imgURL;
+            dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
         };
     </script>
 </head>
